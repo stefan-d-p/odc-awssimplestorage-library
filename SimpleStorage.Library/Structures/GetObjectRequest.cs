@@ -8,7 +8,7 @@ public struct GetObjectRequest
     [OSStructureField(Description = "The bucket name containing the object.",
         DataType = OSDataType.Text,
         IsMandatory = true)]
-    private string BucketName;
+    public string BucketName;
 
     [OSStructureField(
         Description =

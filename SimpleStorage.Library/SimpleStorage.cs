@@ -32,7 +32,13 @@ public class SimpleStorage : ISimpleStorage
                 .ForMember(dest => dest.VersionId, opt => opt.Condition(src => !string.IsNullOrEmpty(src.VersionId)))
                 .ForMember(dest => dest.EtagToMatch,
                     opt => opt.Condition(src => !string.IsNullOrEmpty(src.EtagToMatch)));
-        
+
+            cfg.CreateMap<Structures.DeleteBucketRequest, Amazon.S3.Model.DeleteBucketRequest>()
+                .ForMember(dest => dest.BucketRegion,
+                    opt => opt.Condition(src => !string.IsNullOrEmpty(src.BucketRegion)))
+                .ForMember(dest => dest.BucketRegion, opt => opt.MapFrom(src => S3Region.FindValue(src.BucketRegion)));
+            
+            
             /*
              * Response Mappings
              */
@@ -71,6 +77,20 @@ public class SimpleStorage : ISimpleStorage
         Amazon.S3.Model.GetObjectResponse response = AsyncUtil.RunSync(() => client.GetObjectAsync(request));
         ParseResponse(response);
         return _mapper.Map<Structures.GetObjectResponse>(response);
+    }
+
+    /// <summary>
+    /// Deletes an Amazon S3 bucket
+    /// </summary>
+    /// <param name="credentials">AWS Credentials</param>
+    /// <param name="region">AWS region system name</param>
+    /// <param name="deleteBucketRequest">DeleteBucket Request parameters</param>
+    public void DeleteBucket(Structures.Credentials credentials, string region, Structures.DeleteBucketRequest deleteBucketRequest)
+    {
+        AmazonS3Client client = GetAwsSimpleStorageClient(credentials, region);
+        var request = _mapper.Map<Amazon.S3.Model.DeleteBucketRequest>(deleteBucketRequest);
+        Amazon.S3.Model.DeleteBucketResponse response = AsyncUtil.RunSync(() => client.DeleteBucketAsync(request));
+        ParseResponse(response);
     }
 
     private AmazonS3Client GetAwsSimpleStorageClient(Structures.Credentials credentials, string region) =>
