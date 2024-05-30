@@ -130,5 +130,24 @@ namespace Without.Systems.SimpleStorage
                 Description = "DeleteObject Request Parameters",
                 DataType = OSDataType.InferredFromDotNetType)]
             Structures.DeleteObjectRequest deleteObjectRequest);
+
+        [OSAction(Description = "Generates a pre-signed URL for an Amazon S3 object",
+            ReturnName = "url",
+            ReturnDescription = "pre-signed url to existing or new object",
+            ReturnType = OSDataType.Text,
+            IconResourceName = "Without.Systems.SimpleStorage.Resources.SimpleStorage.png")]
+        string GetPresignedUrl(
+            [OSParameter(
+                Description = "AWS Account Credentials",
+                DataType = OSDataType.InferredFromDotNetType)]
+            Structures.Credentials credentials,
+            [OSParameter(
+                Description = "AWS Region",
+                DataType = OSDataType.Text)]
+            string region,
+            [OSParameter(
+                Description = "GetPreSignedUrl Request Parameters",
+                DataType = OSDataType.InferredFromDotNetType)]
+            Structures.GetPreSignedUrlRequest getPreSignedUrlRequest);
     }
 }

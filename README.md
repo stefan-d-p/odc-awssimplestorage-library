@@ -93,3 +93,17 @@ Deletes a single object from an S3 bucket
 **Result**
 
 * `result` - DeleteObject result structure
+
+### GetPreSignedUrl
+
+Generates a presigned Url for an S3 object
+
+**Input parameters**
+
+* `credentials` - AWS IAM credentials. You can either use IAM user credentials (Access Key and Secret Access Key) or an IAM role (Access Key, Secret Access Key and Session Token)
+* `region` - The AWS region system name (e.g. us-east-1).
+* `getPresignedUrlRequest` - GetPreSignedUrl request parameters
+
+**Result**
+
+* `url` - The generated Url

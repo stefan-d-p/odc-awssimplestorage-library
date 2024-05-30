@@ -22,7 +22,6 @@ public class Tests
         string awsSecretAccessKey = configuration["AWSSecretAccessKey"] ?? throw new InvalidOperationException();
 
         _credentials = new Credentials(awsAccessKey, awsSecretAccessKey);
-  
     }
 
     [Test]
@@ -115,4 +114,21 @@ public class Tests
         
         var result = _actions.DeleteObject(_credentials, _awsRegion, deleteObjectRequest);
     }
+
+    [Test]
+    public void GeneratePresignedUrl()
+    {
+        string bucket = "osslides";
+        string key = "text/newobject.txt";
+
+        GetPreSignedUrlRequest request = new GetPreSignedUrlRequest()
+        {
+            BucketName = bucket,
+            Key = key,
+            Verb = "POST"
+        };
+        
+        var result = _actions.GetPresignedUrl(_credentials, _awsRegion, request);
+    }
+    
 }

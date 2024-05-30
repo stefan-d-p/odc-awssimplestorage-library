@@ -17,6 +17,8 @@ public class SimpleStorage : ISimpleStorage
     {
         MapperConfiguration mapperConfiguration = new MapperConfiguration(cfg =>
         {
+            cfg.AllowNullCollections = true;
+            
             /*
              * Request Mappings
              */
@@ -61,6 +63,15 @@ public class SimpleStorage : ISimpleStorage
             
             cfg.CreateMap<Structures.DeleteObjectRequest, Amazon.S3.Model.DeleteObjectRequest>()
                 .ForMember(dest => dest.VersionId, opt => opt.Condition(src => !string.IsNullOrEmpty(src.VersionId)));
+
+            cfg.CreateMap<Structures.GetPreSignedUrlRequest, Amazon.S3.Model.GetPreSignedUrlRequest>()
+                .ForMember(dest => dest.Expires, opt => opt.Condition(src => src.Expires != new DateTime(1900, 1, 1)))
+                .ForMember(dest => dest.VersionId, opt => opt.Condition(src => !string.IsNullOrEmpty(src.VersionId)))
+                .ForMember(dest => dest.Verb, opt => opt.MapFrom((src, dest) =>
+                {
+                    HttpVerb.TryParse(src.Verb, out HttpVerb httpVerb);
+                    return httpVerb;
+                }));
             
             /*
              * Response Mappings
@@ -93,12 +104,16 @@ public class SimpleStorage : ISimpleStorage
                 .ForMember(dest => dest.ContentLength, opt => opt.Condition(src => src.ContentLength > 0));
             
             cfg.CreateMap<List<Structures.ObjectMetadata>, Amazon.S3.Model.MetadataCollection>()
+                // ReSharper disable once UnusedParameter.Local
                 .ConvertUsing((src, dest) =>
                 {
                     var metadata = new Amazon.S3.Model.MetadataCollection();
-                    foreach (var item in src)
+                    if (src is { Count: > 0 })
                     {
-                        metadata.Add(item.Name, item.Value);
+                        foreach (var item in src)
+                        {
+                            metadata.Add(item.Name, item.Value);
+                        }
                     }
 
                     return metadata;
@@ -224,6 +239,21 @@ public class SimpleStorage : ISimpleStorage
         Amazon.S3.Model.DeleteObjectResponse response = AsyncUtil.RunSync(() => client.DeleteObjectAsync(request));
         ParseResponse(response);
         return _mapper.Map<Structures.DeleteObjectResponse>(response);
+    }
+    
+    /// <summary>
+    /// Generates a pre-signed URL for an Amazon S3 object
+    /// </summary>
+    /// <param name="credentials">AWS Credentials</param>
+    /// <param name="region">AWS region system name</param>
+    /// <param name="getPreSignedUrlRequest">GetPreSignedUrl Request parameters</param>
+    /// <returns>PreSigned Url</returns>
+    public string GetPresignedUrl(Structures.Credentials credentials, string region, Structures.GetPreSignedUrlRequest getPreSignedUrlRequest)
+    {
+        AmazonS3Client client = GetAwsSimpleStorageClient(credentials, region);
+        var request = _mapper.Map<Amazon.S3.Model.GetPreSignedUrlRequest>(getPreSignedUrlRequest);
+        string url = AsyncUtil.RunSync(() => client.GetPreSignedURLAsync(request));
+        return url;
     }
 
     private AmazonS3Client GetAwsSimpleStorageClient(Structures.Credentials credentials, string region) =>
