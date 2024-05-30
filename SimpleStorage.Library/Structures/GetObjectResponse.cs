@@ -24,7 +24,7 @@ public struct GetObjectResponse
     public string DeleteMarker;
 
     [OSStructureField(Description = "The collection of headers for the request")]
-    public List<ObjectHeader> Headers;
+    public HeadersCollection Headers;
 
     [OSStructureField(Description = "The collection of meta data for the request")]
     public List<ObjectMetadata> Metadata;

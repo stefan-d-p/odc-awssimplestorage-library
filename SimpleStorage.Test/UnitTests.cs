@@ -1,10 +1,5 @@
-using Amazon.S3.Model;
 using Microsoft.Extensions.Configuration;
 using Without.Systems.SimpleStorage.Structures;
-using DeleteBucketRequest = Without.Systems.SimpleStorage.Structures.DeleteBucketRequest;
-using GetObjectRequest = Without.Systems.SimpleStorage.Structures.GetObjectRequest;
-using ListObjectsRequest = Without.Systems.SimpleStorage.Structures.ListObjectsRequest;
-using PutBucketRequest = Without.Systems.SimpleStorage.Structures.PutBucketRequest;
 
 namespace Without.Systems.SimpleStorage.Test;
 
@@ -27,6 +22,7 @@ public class Tests
         string awsSecretAccessKey = configuration["AWSSecretAccessKey"] ?? throw new InvalidOperationException();
 
         _credentials = new Credentials(awsAccessKey, awsSecretAccessKey);
+        
     }
 
     [Test]
@@ -83,5 +79,32 @@ public class Tests
         
         _actions.DeleteBucket(_credentials, _awsRegion, deleteBucketRequest);
         
+    }
+
+    [Test]
+    public void PutObjectBinaryToBucket()
+    {
+        string filePath = @"c:\dev\doc2.pdf";
+        string key = "test/doc2.pdf";
+        string bucket = "osslides";
+        
+        List<Tag> tags = new List<Tag>();
+        tags.Add(new Tag() { Key = "project", Value = "odc"});
+        
+        List<ObjectMetadata> metadata = new List<ObjectMetadata>();
+        metadata.Add(new ObjectMetadata() { Name = "meta1", Value = "data1"});
+
+        PutObjectRequest request = new PutObjectRequest()
+        {
+            BucketName = bucket,
+            Key = key,
+            Data = File.ReadAllBytes(filePath),
+            StorageClass = "STANDARD",
+            TagSet = tags,
+            Metadata = metadata
+        };
+        
+        
+        _actions.PutObject(_credentials, _awsRegion, request);
     }
 }

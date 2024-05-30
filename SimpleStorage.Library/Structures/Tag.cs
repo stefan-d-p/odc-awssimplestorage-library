@@ -2,15 +2,15 @@
 
 namespace Without.Systems.SimpleStorage.Structures;
 
-[OSStructure(Description = "Object Metadata Value Pair")]
-public struct ObjectMetadata
+[OSStructure(Description = "Key value tag")]
+public struct Tag
 {
-    [OSStructureField(Description = "Metadata name",
+    [OSStructureField(Description = "Name of the object key",
         DataType = OSDataType.Text,
         IsMandatory = true)]
-    public string Name;
+    public string Key;
     
-    [OSStructureField(Description = "Metadata value",
+    [OSStructureField(Description = "Value of the object key",
         DataType = OSDataType.Text,
         IsMandatory = true)]
     public string Value;

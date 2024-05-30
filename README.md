@@ -65,3 +65,17 @@ List objects in an Amazon S3 Buckets
 **Result**
 
 * `result` - ListObjects result structure
+
+### PutObject
+
+Allows to put a binary or text object to an AWS S3 Bucket including tags and metadata
+
+**Input parameters**
+
+* `credentials` - AWS IAM credentials. You can either use IAM user credentials (Access Key and Secret Access Key) or an IAM role (Access Key, Secret Access Key and Session Token)
+* `region` - The AWS region system name (e.g. us-east-1).
+* `putObjectRequest` - PutObject request parameters
+
+**Result**
+
+* `result` - PuObject result structure

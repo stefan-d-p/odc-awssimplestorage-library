@@ -49,31 +49,64 @@ public class SimpleStorage : ISimpleStorage
                 .ForMember(dest => dest.Prefix, opt => opt.Condition(src => !string.IsNullOrEmpty(src.Prefix)))
                 .ForMember(dest => dest.OptionalObjectAttributes,
                     opt => opt.Condition(src => src.OptionalObjectAttributes is { Count: > 0 }));
-              
+
+            cfg.CreateMap<Structures.PutObjectRequest, Amazon.S3.Model.PutObjectRequest>()
+                .ForMember(dest => dest.ContentType,
+                    opt => opt.Condition(src => !string.IsNullOrEmpty(src.ContentType)))
+                .ForMember(dest => dest.Metadata, opt => opt.Condition(src => src.Metadata is { Count: > 0 }))
+                .ForMember(dest => dest.ContentBody,
+                    opt => opt.Condition(src => !string.IsNullOrEmpty(src.ContentBody)))
+                .ForMember(dest => dest.InputStream, opt => opt.Condition(src => src.Data is { Length: > 0}))
+                .ForMember(dest => dest.InputStream, opt => opt.MapFrom(src => new MemoryStream(src.Data)));
             
             /*
              * Response Mappings
              */
 
             cfg.CreateMap<Amazon.S3.Model.GetObjectResponse, Structures.GetObjectResponse>()
-                .ForMember(dest => dest.Headers,
-                    opt => opt.MapFrom(src => src.Headers.Keys.Select(key => new Structures.ObjectHeader
-                        { Name = key, Value = src.Headers[key] }).ToList()))
                 .ForMember(dest => dest.Metadata,
                     opt => opt.MapFrom(src => src.Metadata.Keys.Select(key => new Structures.ObjectMetadata
                         { Name = key, Value = src.Metadata[key] }).ToList()));
 
             cfg.CreateMap<Amazon.S3.Model.ListBucketsResponse, Structures.ListBucketsResponse>();
             cfg.CreateMap<Amazon.S3.Model.ListObjectsV2Response, Structures.ListObjectsResponse>();
+            cfg.CreateMap<Amazon.S3.Model.PutObjectResponse, Structures.PutObjectResponse>();
             
             /*
              * Individual Mappings
              */
 
+            cfg.CreateMap<Structures.Tag, Amazon.S3.Model.Tag>();
+            cfg.CreateMap<Structures.HeadersCollection, Amazon.S3.Model.HeadersCollection>()
+                .ForMember(dest => dest.ContentType,
+                    opt => opt.Condition(src => !string.IsNullOrEmpty(src.ContentType)))
+                .ForMember(dest => dest.CacheControl,
+                    opt => opt.Condition(src => !string.IsNullOrEmpty(src.CacheControl)))
+                .ForMember(dest => dest.ContentDisposition,
+                    opt => opt.Condition(src => !string.IsNullOrEmpty(src.ContentDisposition)))
+                .ForMember(dest => dest.ContentEncoding,
+                    opt => opt.Condition(src => !string.IsNullOrEmpty(src.ContentEncoding)))
+                .ForMember(dest => dest.ContentLength, opt => opt.Condition(src => src.ContentLength > 0));
+            
+            cfg.CreateMap<List<Structures.ObjectMetadata>, Amazon.S3.Model.MetadataCollection>()
+                .ConvertUsing((src, dest) =>
+                {
+                    var metadata = new Amazon.S3.Model.MetadataCollection();
+                    foreach (var item in src)
+                    {
+                        metadata.Add(item.Name, item.Value);
+                    }
+
+                    return metadata;
+                });
+                
+            
             cfg.CreateMap<Amazon.S3.Model.Expiration, Structures.Expiration>();
             cfg.CreateMap<Amazon.S3.Model.Owner, Structures.Owner>();
             cfg.CreateMap<Amazon.S3.Model.S3Bucket, Structures.S3Bucket>();
             cfg.CreateMap<Amazon.S3.Model.S3Object, Structures.S3Object>();
+            cfg.CreateMap<Amazon.S3.Model.HeadersCollection, Structures.HeadersCollection>();
+
         });
 
         _mapper = mapperConfiguration.CreateMapper();
@@ -155,6 +188,22 @@ public class SimpleStorage : ISimpleStorage
         Amazon.S3.Model.ListObjectsV2Response response = AsyncUtil.RunSync(() => client.ListObjectsV2Async(request));
         ParseResponse(response);
         return _mapper.Map<Structures.ListObjectsResponse>(response);
+    }
+    
+    /// <summary>
+    /// Stores an object in Amazon S3
+    /// </summary>
+    /// <param name="credentials">AWS Credentials</param>
+    /// <param name="region">AWS region system name</param>
+    /// <param name="putObjectRequest">PutObject Request parameters</param>
+    /// <returns>PutObject Response Structure</returns>
+    public Structures.PutObjectResponse PutObject(Structures.Credentials credentials, string region, Structures.PutObjectRequest putObjectRequest)
+    {
+        AmazonS3Client client = GetAwsSimpleStorageClient(credentials, region);
+        var request = _mapper.Map<Amazon.S3.Model.PutObjectRequest>(putObjectRequest);
+        Amazon.S3.Model.PutObjectResponse response = AsyncUtil.RunSync(() => client.PutObjectAsync(request));
+        ParseResponse(response);
+        return _mapper.Map<Structures.PutObjectResponse>(response);
     }
 
     private AmazonS3Client GetAwsSimpleStorageClient(Structures.Credentials credentials, string region) =>

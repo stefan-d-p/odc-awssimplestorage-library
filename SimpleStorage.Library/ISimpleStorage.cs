@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using OutSystems.ExternalLibraries.SDK;
 
@@ -91,5 +92,24 @@ namespace Without.Systems.SimpleStorage
             [OSParameter(
                 Description = "ListObjects Request Parameters")]
             Structures.ListObjectsRequest listObjectsRequest);
+
+        [OSAction(Description = "Puts an object in an Amazon S3 Bucket",
+            ReturnName = "result",
+            ReturnDescription = "PutObject result",
+            ReturnType = OSDataType.InferredFromDotNetType,
+            IconResourceName = "Without.Systems.SimpleStorage.Resources.SimpleStorage.png")]
+        Structures.PutObjectResponse PutObject(
+            [OSParameter(
+                Description = "AWS Account Credentials",
+                DataType = OSDataType.InferredFromDotNetType)]
+            Structures.Credentials credentials,
+            [OSParameter(
+                Description = "AWS Region",
+                DataType = OSDataType.Text)]
+            string region,
+            [OSParameter(
+                Description = "PutObject Request Parameters",
+                DataType = OSDataType.InferredFromDotNetType)]
+            Structures.PutObjectRequest putObjectRequest);
     }
 }
