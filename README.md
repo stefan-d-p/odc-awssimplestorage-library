@@ -41,3 +41,27 @@ List Amazon S3 Buckets
 **Result**
 
 * `result` - ListBuckets result structure
+
+### PutBucket
+
+Creates an Amazon S3 bucket
+
+**Input parameters**
+
+* `credentials` - AWS IAM credentials. You can either use IAM user credentials (Access Key and Secret Access Key) or an IAM role (Access Key, Secret Access Key and Session Token)
+* `region` - The AWS region system name (e.g. us-east-1).
+* `putBucketRequest` - PutBucket Request Parameters.
+
+### ListObjects
+
+List objects in an Amazon S3 Buckets
+
+**Input parameters**
+
+* `credentials` - AWS IAM credentials. You can either use IAM user credentials (Access Key and Secret Access Key) or an IAM role (Access Key, Secret Access Key and Session Token)
+* `region` - The AWS region system name (e.g. us-east-1).
+* `listObjectsRequest` - ListObjects Request Parameters
+
+**Result**
+
+* `result` - ListObjects result structure
