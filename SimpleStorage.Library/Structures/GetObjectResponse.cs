@@ -3,6 +3,7 @@
 
 namespace Without.Systems.SimpleStorage.Structures;
 
+[OSStructure(Description = "GetObject Response Structure")]
 public struct GetObjectResponse
 {
     [OSStructureField(Description = "The date and time at which the object is no longer cacheable",
