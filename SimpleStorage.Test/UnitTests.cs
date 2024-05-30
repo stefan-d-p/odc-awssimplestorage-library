@@ -22,7 +22,7 @@ public class Tests
         string awsSecretAccessKey = configuration["AWSSecretAccessKey"] ?? throw new InvalidOperationException();
 
         _credentials = new Credentials(awsAccessKey, awsSecretAccessKey);
-        
+  
     }
 
     [Test]
@@ -82,7 +82,7 @@ public class Tests
     }
 
     [Test]
-    public void PutObjectBinaryToBucket()
+    public void PutAndDeleteObjectBinaryToBucket()
     {
         string filePath = @"c:\dev\doc2.pdf";
         string key = "test/doc2.pdf";
@@ -106,5 +106,13 @@ public class Tests
         
         
         _actions.PutObject(_credentials, _awsRegion, request);
+
+        DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest()
+        {
+            BucketName = bucket,
+            Key = key
+        };
+        
+        var result = _actions.DeleteObject(_credentials, _awsRegion, deleteObjectRequest);
     }
 }

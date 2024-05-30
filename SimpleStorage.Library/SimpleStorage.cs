@@ -59,6 +59,9 @@ public class SimpleStorage : ISimpleStorage
                 .ForMember(dest => dest.InputStream, opt => opt.Condition(src => src.Data is { Length: > 0}))
                 .ForMember(dest => dest.InputStream, opt => opt.MapFrom(src => new MemoryStream(src.Data)));
             
+            cfg.CreateMap<Structures.DeleteObjectRequest, Amazon.S3.Model.DeleteObjectRequest>()
+                .ForMember(dest => dest.VersionId, opt => opt.Condition(src => !string.IsNullOrEmpty(src.VersionId)));
+            
             /*
              * Response Mappings
              */
@@ -71,6 +74,7 @@ public class SimpleStorage : ISimpleStorage
             cfg.CreateMap<Amazon.S3.Model.ListBucketsResponse, Structures.ListBucketsResponse>();
             cfg.CreateMap<Amazon.S3.Model.ListObjectsV2Response, Structures.ListObjectsResponse>();
             cfg.CreateMap<Amazon.S3.Model.PutObjectResponse, Structures.PutObjectResponse>();
+            cfg.CreateMap<Amazon.S3.Model.DeleteObjectResponse, Structures.DeleteObjectResponse>();
             
             /*
              * Individual Mappings
@@ -204,6 +208,22 @@ public class SimpleStorage : ISimpleStorage
         Amazon.S3.Model.PutObjectResponse response = AsyncUtil.RunSync(() => client.PutObjectAsync(request));
         ParseResponse(response);
         return _mapper.Map<Structures.PutObjectResponse>(response);
+    }
+    
+    /// <summary>
+    /// Deletes an object from Amazon S3
+    /// </summary>
+    /// <param name="credentials">AWS Credentials</param>
+    /// <param name="region">AWS region system name</param>
+    /// <param name="deleteObjectRequest">DeleteObject Request parameters</param>
+    /// <returns>DeleteObject Response Structure</returns>
+    public Structures.DeleteObjectResponse DeleteObject(Structures.Credentials credentials, string region, Structures.DeleteObjectRequest deleteObjectRequest)
+    {
+        AmazonS3Client client = GetAwsSimpleStorageClient(credentials, region);
+        var request = _mapper.Map<Amazon.S3.Model.DeleteObjectRequest>(deleteObjectRequest);
+        Amazon.S3.Model.DeleteObjectResponse response = AsyncUtil.RunSync(() => client.DeleteObjectAsync(request));
+        ParseResponse(response);
+        return _mapper.Map<Structures.DeleteObjectResponse>(response);
     }
 
     private AmazonS3Client GetAwsSimpleStorageClient(Structures.Credentials credentials, string region) =>

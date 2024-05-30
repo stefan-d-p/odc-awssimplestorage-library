@@ -111,5 +111,24 @@ namespace Without.Systems.SimpleStorage
                 Description = "PutObject Request Parameters",
                 DataType = OSDataType.InferredFromDotNetType)]
             Structures.PutObjectRequest putObjectRequest);
+
+        [OSAction(Description = "Deletes an object in an Amazon S3 Bucket",
+            ReturnName = "result",
+            ReturnDescription = "DeleteObject result",
+            ReturnType = OSDataType.InferredFromDotNetType,
+            IconResourceName = "Without.Systems.SimpleStorage.Resources.SimpleStorage.png")]
+        Structures.DeleteObjectResponse DeleteObject(
+            [OSParameter(
+                Description = "AWS Account Credentials",
+                DataType = OSDataType.InferredFromDotNetType)]
+            Structures.Credentials credentials,
+            [OSParameter(
+                Description = "AWS Region",
+                DataType = OSDataType.Text)]
+            string region,
+            [OSParameter(
+                Description = "DeleteObject Request Parameters",
+                DataType = OSDataType.InferredFromDotNetType)]
+            Structures.DeleteObjectRequest deleteObjectRequest);
     }
 }

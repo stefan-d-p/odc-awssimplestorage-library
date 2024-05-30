@@ -78,4 +78,18 @@ Allows to put a binary or text object to an AWS S3 Bucket including tags and met
 
 **Result**
 
-* `result` - PuObject result structure
+* `result` - PutObject result structure
+
+### DeleteObject
+
+Deletes a single object from an S3 bucket
+
+**Input parameters**
+
+* `credentials` - AWS IAM credentials. You can either use IAM user credentials (Access Key and Secret Access Key) or an IAM role (Access Key, Secret Access Key and Session Token)
+* `region` - The AWS region system name (e.g. us-east-1).
+* `deleteObjectRequest` - DeleteObject request parameters
+
+**Result**
+
+* `result` - DeleteObject result structure
