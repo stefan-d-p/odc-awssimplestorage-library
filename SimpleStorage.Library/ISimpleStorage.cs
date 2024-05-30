@@ -27,5 +27,20 @@ namespace Without.Systems.SimpleStorage
                 Description = "GetObject Request Parameters",
                 DataType = OSDataType.InferredFromDotNetType)]
             Structures.GetObjectRequest getObjectRequest);
+
+        [OSAction(Description = "List Amazon S3 Buckets",
+            ReturnName = "result",
+            ReturnDescription = "ListBuckets result",
+            ReturnType = OSDataType.InferredFromDotNetType,
+            IconResourceName = "Without.Systems.SimpleStorage.Resources.SimpleStorage.png")]
+        Structures.ListBucketsResponse ListBuckets(
+            [OSParameter(
+                Description = "AWS Account Credentials",
+                DataType = OSDataType.InferredFromDotNetType)]
+            Structures.Credentials credentials,
+            [OSParameter(
+                Description = "AWS Region",
+                DataType = OSDataType.Text)]
+            string region);
     }
 }

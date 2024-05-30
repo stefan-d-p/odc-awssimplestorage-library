@@ -24,6 +24,7 @@ public class Tests
         string awsSecretAccessKey = configuration["AWSSecretAccessKey"] ?? throw new InvalidOperationException();
 
         _credentials = new Credentials(awsAccessKey, awsSecretAccessKey);
+        
     }
 
     [Test]
@@ -39,5 +40,11 @@ public class Tests
         };
 
         var result = _actions.GetObject(_credentials, _awsRegion, request);
+    }
+
+    [Test]
+    public void ListBuckets()
+    {
+        var result = _actions.ListBuckets(_credentials, _awsRegion);
     }
 }

@@ -28,3 +28,16 @@ Deletes an Amazon S3 bucket
 * `credentials` - AWS IAM credentials. You can either use IAM user credentials (Access Key and Secret Access Key) or an IAM role (Access Key, Secret Access Key and Session Token)
 * `region` - The AWS region system name (e.g. us-east-1).
 * `deleteBucketRequest` - DeleteBucket Request Parameters.
+
+### ListBuckets
+
+List Amazon S3 Buckets
+
+**Input parameters**
+
+* `credentials` - AWS IAM credentials. You can either use IAM user credentials (Access Key and Secret Access Key) or an IAM role (Access Key, Secret Access Key and Session Token)
+* `region` - The AWS region system name (e.g. us-east-1).
+
+**Result**
+
+* `result` - ListBuckets result structure

@@ -50,12 +50,16 @@ public class SimpleStorage : ISimpleStorage
                 .ForMember(dest => dest.Metadata,
                     opt => opt.MapFrom(src => src.Metadata.Keys.Select(key => new Structures.ObjectMetadata
                         { Name = key, Value = src.Metadata[key] }).ToList()));
+
+            cfg.CreateMap<Amazon.S3.Model.ListBucketsResponse, Structures.ListBucketsResponse>();
             
             /*
              * Individual Mappings
              */
 
             cfg.CreateMap<Amazon.S3.Model.Expiration, Structures.Expiration>();
+            cfg.CreateMap<Amazon.S3.Model.Owner, Structures.Owner>();
+            cfg.CreateMap<Amazon.S3.Model.S3Bucket, Structures.S3Bucket>();
         });
 
         _mapper = mapperConfiguration.CreateMapper();
@@ -91,6 +95,20 @@ public class SimpleStorage : ISimpleStorage
         var request = _mapper.Map<Amazon.S3.Model.DeleteBucketRequest>(deleteBucketRequest);
         Amazon.S3.Model.DeleteBucketResponse response = AsyncUtil.RunSync(() => client.DeleteBucketAsync(request));
         ParseResponse(response);
+    }
+
+    /// <summary>
+    /// Lists Amazon S3 buckets
+    /// </summary>
+    /// <param name="credentials">AWS Credentials</param>
+    /// <param name="region">AWS region system name</param>
+    /// <returns>ListBuckets Response Structure</returns>
+    public Structures.ListBucketsResponse ListBuckets(Structures.Credentials credentials, string region)
+    {
+        AmazonS3Client client = GetAwsSimpleStorageClient(credentials, region);
+        Amazon.S3.Model.ListBucketsResponse response = AsyncUtil.RunSync(() => client.ListBucketsAsync());
+        ParseResponse(response);
+        return _mapper.Map<Structures.ListBucketsResponse>(response);
     }
 
     private AmazonS3Client GetAwsSimpleStorageClient(Structures.Credentials credentials, string region) =>
