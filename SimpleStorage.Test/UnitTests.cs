@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Without.Systems.SimpleStorage.Structures;
 using DeleteBucketRequest = Without.Systems.SimpleStorage.Structures.DeleteBucketRequest;
 using GetObjectRequest = Without.Systems.SimpleStorage.Structures.GetObjectRequest;
+using ListObjectsRequest = Without.Systems.SimpleStorage.Structures.ListObjectsRequest;
 using PutBucketRequest = Without.Systems.SimpleStorage.Structures.PutBucketRequest;
 
 namespace Without.Systems.SimpleStorage.Test;
@@ -26,7 +27,6 @@ public class Tests
         string awsSecretAccessKey = configuration["AWSSecretAccessKey"] ?? throw new InvalidOperationException();
 
         _credentials = new Credentials(awsAccessKey, awsSecretAccessKey);
-        
     }
 
     [Test]
@@ -48,6 +48,19 @@ public class Tests
     public void ListBuckets()
     {
         var result = _actions.ListBuckets(_credentials, _awsRegion);
+    }
+    
+    [Test]
+    public void ListObjects()
+    {
+        string bucket = "osslides";
+
+        ListObjectsRequest listObjectsRequest = new ListObjectsRequest()
+        {
+            BucketName = bucket
+        };
+
+        var result = _actions.ListObjects(_credentials, _awsRegion, listObjectsRequest);
     }
 
     [Test]

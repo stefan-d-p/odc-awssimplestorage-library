@@ -73,5 +73,23 @@ namespace Without.Systems.SimpleStorage
             [OSParameter(
                 Description = "PutBucket Request Parameters")]
             Structures.PutBucketRequest putBucketRequest);
+
+        [OSAction(Description = "List Objects of an Amazon S3 Bucket",
+            ReturnName = "result",
+            ReturnDescription = "Object results",
+            ReturnType = OSDataType.InferredFromDotNetType,
+            IconResourceName = "Without.Systems.SimpleStorage.Resources.SimpleStorage.png")]
+        Structures.ListObjectsResponse ListObjects(
+            [OSParameter(
+                Description = "AWS Account Credentials",
+                DataType = OSDataType.InferredFromDotNetType)]
+            Structures.Credentials credentials,
+            [OSParameter(
+                Description = "AWS Region",
+                DataType = OSDataType.Text)]
+            string region,
+            [OSParameter(
+                Description = "ListObjects Request Parameters")]
+            Structures.ListObjectsRequest listObjectsRequest);
     }
 }
