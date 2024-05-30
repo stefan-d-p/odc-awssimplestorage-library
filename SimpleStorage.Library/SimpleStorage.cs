@@ -3,7 +3,6 @@ using Amazon;
 using Amazon.Runtime;
 using Amazon.S3;
 using AutoMapper;
-using OutSystems.ExternalLibraries.SDK;
 using Without.Systems.SimpleStorage.Extensions;
 using Without.Systems.SimpleStorage.Util;
 
@@ -37,7 +36,10 @@ public class SimpleStorage : ISimpleStorage
                 .ForMember(dest => dest.BucketRegion,
                     opt => opt.Condition(src => !string.IsNullOrEmpty(src.BucketRegion)))
                 .ForMember(dest => dest.BucketRegion, opt => opt.MapFrom(src => S3Region.FindValue(src.BucketRegion)));
-            
+
+            cfg.CreateMap<Structures.PutBucketRequest, Amazon.S3.Model.PutBucketRequest>()
+                .ForMember(dest => dest.BucketRegionName,
+                    opt => opt.Condition(src => !string.IsNullOrEmpty(src.BucketRegionName)));
             
             /*
              * Response Mappings
@@ -109,6 +111,21 @@ public class SimpleStorage : ISimpleStorage
         Amazon.S3.Model.ListBucketsResponse response = AsyncUtil.RunSync(() => client.ListBucketsAsync());
         ParseResponse(response);
         return _mapper.Map<Structures.ListBucketsResponse>(response);
+    }
+
+    /// <summary>
+    /// Creates an Amazon S3 bucket
+    /// </summary>
+    /// <param name="credentials">AWS Credentials</param>
+    /// <param name="region">AWS region system name</param>
+    /// <param name="putBucketRequest">PutBucket Request parameters</param>
+    public void PutBucket(Structures.Credentials credentials, string region,
+        Structures.PutBucketRequest putBucketRequest)
+    {
+        AmazonS3Client client = GetAwsSimpleStorageClient(credentials, region);
+        var request = _mapper.Map<Amazon.S3.Model.PutBucketRequest>(putBucketRequest);
+        Amazon.S3.Model.PutBucketResponse response = AsyncUtil.RunSync(() => client.PutBucketAsync(request));
+        ParseResponse(response);
     }
 
     private AmazonS3Client GetAwsSimpleStorageClient(Structures.Credentials credentials, string region) =>

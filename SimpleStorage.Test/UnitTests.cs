@@ -1,7 +1,9 @@
 using Amazon.S3.Model;
 using Microsoft.Extensions.Configuration;
 using Without.Systems.SimpleStorage.Structures;
+using DeleteBucketRequest = Without.Systems.SimpleStorage.Structures.DeleteBucketRequest;
 using GetObjectRequest = Without.Systems.SimpleStorage.Structures.GetObjectRequest;
+using PutBucketRequest = Without.Systems.SimpleStorage.Structures.PutBucketRequest;
 
 namespace Without.Systems.SimpleStorage.Test;
 
@@ -46,5 +48,27 @@ public class Tests
     public void ListBuckets()
     {
         var result = _actions.ListBuckets(_credentials, _awsRegion);
+    }
+
+    [Test]
+    public void CreateAndDeleteBucket()
+    {
+        string bucketname = "odclientsampletest";
+        
+        PutBucketRequest putBucketRequest = new PutBucketRequest()
+        {
+            BucketName = bucketname,
+            UseClientRegion = true
+        };
+        
+        _actions.PutBucket(_credentials, _awsRegion, putBucketRequest);
+
+        DeleteBucketRequest deleteBucketRequest = new DeleteBucketRequest()
+        {
+            BucketName = bucketname
+        };
+        
+        _actions.DeleteBucket(_credentials, _awsRegion, deleteBucketRequest);
+        
     }
 }

@@ -28,6 +28,22 @@ namespace Without.Systems.SimpleStorage
                 DataType = OSDataType.InferredFromDotNetType)]
             Structures.GetObjectRequest getObjectRequest);
 
+        [OSAction(Description = "Delete an Amazon S3 Bucket",
+            IconResourceName = "Without.Systems.SimpleStorage.Resources.SimpleStorage.png")]
+        void DeleteBucket(
+            [OSParameter(
+                Description = "AWS Account Credentials",
+                DataType = OSDataType.InferredFromDotNetType)]
+            Structures.Credentials credentials,
+            [OSParameter(
+                Description = "AWS Region",
+                DataType = OSDataType.Text)]
+            string region,
+            [OSParameter(
+                Description = "DeleteBucket Request Parameters",
+                DataType = OSDataType.InferredFromDotNetType)]
+            Structures.DeleteBucketRequest deleteBucketRequest);
+        
         [OSAction(Description = "List Amazon S3 Buckets",
             ReturnName = "result",
             ReturnDescription = "ListBuckets result",
@@ -42,5 +58,20 @@ namespace Without.Systems.SimpleStorage
                 Description = "AWS Region",
                 DataType = OSDataType.Text)]
             string region);
+
+        [OSAction(Description = "Create an Amazon S3 Bucket",
+            IconResourceName = "Without.Systems.SimpleStorage.Resources.SimpleStorage.png")]
+        void PutBucket(
+            [OSParameter(
+                Description = "AWS Account Credentials",
+                DataType = OSDataType.InferredFromDotNetType)]
+            Structures.Credentials credentials,
+            [OSParameter(
+                Description = "AWS Region",
+                DataType = OSDataType.Text)]
+            string region,
+            [OSParameter(
+                Description = "PutBucket Request Parameters")]
+            Structures.PutBucketRequest putBucketRequest);
     }
 }
