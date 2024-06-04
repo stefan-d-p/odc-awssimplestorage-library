@@ -67,9 +67,10 @@ public class SimpleStorage : ISimpleStorage
             cfg.CreateMap<Structures.GetPreSignedUrlRequest, Amazon.S3.Model.GetPreSignedUrlRequest>()
                 .ForMember(dest => dest.Expires, opt => opt.Condition(src => src.Expires != new DateTime(1900, 1, 1)))
                 .ForMember(dest => dest.VersionId, opt => opt.Condition(src => !string.IsNullOrEmpty(src.VersionId)))
+                // ReSharper disable once UnusedParameter.Local
                 .ForMember(dest => dest.Verb, opt => opt.MapFrom((src, dest) =>
                 {
-                    HttpVerb.TryParse(src.Verb, out HttpVerb httpVerb);
+                    Enum.TryParse(src.Verb, out HttpVerb httpVerb);
                     return httpVerb;
                 }));
             
