@@ -9,6 +9,7 @@ public class Tests
     
     private Credentials _credentials;
     private readonly string _awsRegion = "eu-central-1";
+    private AmazonS3Config _awsConfig;
 
     [SetUp]
     public void Setup()
@@ -22,6 +23,12 @@ public class Tests
         string awsSecretAccessKey = configuration["AWSSecretAccessKey"] ?? throw new InvalidOperationException();
 
         _credentials = new Credentials(awsAccessKey, awsSecretAccessKey);
+        _awsConfig = new AmazonS3Config()
+        {
+            RegionEndpoint = _awsRegion,
+            ForcePathStyle = true,
+            ServiceURL = "http://localhost:9000"
+        };
     }
 
     [Test]
@@ -36,13 +43,13 @@ public class Tests
             Key = key
         };
 
-        var result = _actions.GetObject(_credentials, _awsRegion, request);
+        var result = _actions.GetObject(_credentials, _awsConfig, request);
     }
 
     [Test]
     public void ListBuckets()
     {
-        var result = _actions.ListBuckets(_credentials, _awsRegion);
+        var result = _actions.ListBuckets(_credentials, _awsConfig);
     }
     
     [Test]
@@ -55,7 +62,7 @@ public class Tests
             BucketName = bucket
         };
 
-        var result = _actions.ListObjects(_credentials, _awsRegion, listObjectsRequest);
+        var result = _actions.ListObjects(_credentials, _awsConfig, listObjectsRequest);
     }
 
     [Test]
@@ -69,14 +76,14 @@ public class Tests
             UseClientRegion = true
         };
         
-        _actions.PutBucket(_credentials, _awsRegion, putBucketRequest);
+        _actions.PutBucket(_credentials, _awsConfig, putBucketRequest);
 
         DeleteBucketRequest deleteBucketRequest = new DeleteBucketRequest()
         {
             BucketName = bucketname
         };
         
-        _actions.DeleteBucket(_credentials, _awsRegion, deleteBucketRequest);
+        _actions.DeleteBucket(_credentials, _awsConfig, deleteBucketRequest);
         
     }
 
@@ -85,7 +92,7 @@ public class Tests
     {
         string filePath = @"c:\dev\doc2.pdf";
         string key = "test/doc2.pdf";
-        string bucket = "osslides";
+        string bucket = "odc";
         
         List<Tag> tags = new List<Tag>();
         tags.Add(new Tag() { Key = "project", Value = "odc"});
@@ -104,7 +111,7 @@ public class Tests
         };
         
         
-        _actions.PutObject(_credentials, _awsRegion, request);
+        _actions.PutObject(_credentials, _awsConfig, request);
 
         DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest()
         {
@@ -112,7 +119,7 @@ public class Tests
             Key = key
         };
         
-        var result = _actions.DeleteObject(_credentials, _awsRegion, deleteObjectRequest);
+        var result = _actions.DeleteObject(_credentials, _awsConfig, deleteObjectRequest);
     }
 
     [Test]
@@ -128,7 +135,28 @@ public class Tests
             Verb = "POST"
         };
         
-        var result = _actions.GetPresignedUrl(_credentials, _awsRegion, request);
+        var result = _actions.GetPresignedUrl(_credentials, _awsConfig, request);
     }
-    
+
+    [Test]
+    public void Secure_Gateay()
+    {
+        Environment.SetEnvironmentVariable("SECURE_GATEWAY", "https://secure-gateway:9000");
+        string bucket = "odc";
+        
+        var localconfig = new AmazonS3Config()
+        {
+            RegionEndpoint = _awsRegion,
+            ForcePathStyle = true,
+            UseSecureGateway = true,
+        };
+
+        ListObjectsRequest listObjectsRequest = new ListObjectsRequest()
+        {
+            BucketName = bucket
+        };
+
+        var result = _actions.ListObjects(_credentials, localconfig, listObjectsRequest);
+        
+    }
 }

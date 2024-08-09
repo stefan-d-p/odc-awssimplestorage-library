@@ -21,9 +21,9 @@ namespace Without.Systems.SimpleStorage
                 DataType = OSDataType.InferredFromDotNetType)]
             Structures.Credentials credentials,
             [OSParameter(
-                Description = "AWS Region",
-                DataType = OSDataType.Text)]
-            string region,
+                Description = "S3 Client configuration",
+                DataType = OSDataType.InferredFromDotNetType)]
+            Structures.AmazonS3Config config,
             [OSParameter(
                 Description = "GetObject Request Parameters",
                 DataType = OSDataType.InferredFromDotNetType)]
@@ -37,9 +37,9 @@ namespace Without.Systems.SimpleStorage
                 DataType = OSDataType.InferredFromDotNetType)]
             Structures.Credentials credentials,
             [OSParameter(
-                Description = "AWS Region",
-                DataType = OSDataType.Text)]
-            string region,
+                Description = "S3 Client configuration",
+                DataType = OSDataType.InferredFromDotNetType)]
+            Structures.AmazonS3Config config,
             [OSParameter(
                 Description = "DeleteBucket Request Parameters",
                 DataType = OSDataType.InferredFromDotNetType)]
@@ -56,9 +56,9 @@ namespace Without.Systems.SimpleStorage
                 DataType = OSDataType.InferredFromDotNetType)]
             Structures.Credentials credentials,
             [OSParameter(
-                Description = "AWS Region",
-                DataType = OSDataType.Text)]
-            string region);
+                Description = "S3 Client configuration",
+                DataType = OSDataType.InferredFromDotNetType)]
+            Structures.AmazonS3Config config);
 
         [OSAction(Description = "Create an Amazon S3 Bucket",
             IconResourceName = "Without.Systems.SimpleStorage.Resources.SimpleStorage.png")]
@@ -68,9 +68,9 @@ namespace Without.Systems.SimpleStorage
                 DataType = OSDataType.InferredFromDotNetType)]
             Structures.Credentials credentials,
             [OSParameter(
-                Description = "AWS Region",
-                DataType = OSDataType.Text)]
-            string region,
+                Description = "S3 Client configuration",
+                DataType = OSDataType.InferredFromDotNetType)]
+            Structures.AmazonS3Config config,
             [OSParameter(
                 Description = "PutBucket Request Parameters")]
             Structures.PutBucketRequest putBucketRequest);
@@ -86,9 +86,9 @@ namespace Without.Systems.SimpleStorage
                 DataType = OSDataType.InferredFromDotNetType)]
             Structures.Credentials credentials,
             [OSParameter(
-                Description = "AWS Region",
-                DataType = OSDataType.Text)]
-            string region,
+                Description = "S3 Client configuration",
+                DataType = OSDataType.InferredFromDotNetType)]
+            Structures.AmazonS3Config config,
             [OSParameter(
                 Description = "ListObjects Request Parameters")]
             Structures.ListObjectsRequest listObjectsRequest);
@@ -104,9 +104,9 @@ namespace Without.Systems.SimpleStorage
                 DataType = OSDataType.InferredFromDotNetType)]
             Structures.Credentials credentials,
             [OSParameter(
-                Description = "AWS Region",
-                DataType = OSDataType.Text)]
-            string region,
+                Description = "S3 Client configuration",
+                DataType = OSDataType.InferredFromDotNetType)]
+            Structures.AmazonS3Config config,
             [OSParameter(
                 Description = "PutObject Request Parameters",
                 DataType = OSDataType.InferredFromDotNetType)]
@@ -123,9 +123,9 @@ namespace Without.Systems.SimpleStorage
                 DataType = OSDataType.InferredFromDotNetType)]
             Structures.Credentials credentials,
             [OSParameter(
-                Description = "AWS Region",
-                DataType = OSDataType.Text)]
-            string region,
+                Description = "S3 Client configuration",
+                DataType = OSDataType.InferredFromDotNetType)]
+            Structures.AmazonS3Config config,
             [OSParameter(
                 Description = "DeleteObject Request Parameters",
                 DataType = OSDataType.InferredFromDotNetType)]
@@ -142,9 +142,9 @@ namespace Without.Systems.SimpleStorage
                 DataType = OSDataType.InferredFromDotNetType)]
             Structures.Credentials credentials,
             [OSParameter(
-                Description = "AWS Region",
-                DataType = OSDataType.Text)]
-            string region,
+                Description = "S3 Client configuration",
+                DataType = OSDataType.InferredFromDotNetType)]
+            Structures.AmazonS3Config config,
             [OSParameter(
                 Description = "GetPreSignedUrl Request Parameters",
                 DataType = OSDataType.InferredFromDotNetType)]

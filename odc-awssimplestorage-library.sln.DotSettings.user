@@ -1,12 +1,10 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=60dea1f2_002D3e30_002D4862_002D928f_002D7636d569c4ce/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="GetObject" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::D8379BF2-8E31-46CD-8A2D-E0B854B454EF::net6.0::Without.Systems.SimpleStorage.Test.Tests.GetObject&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::D8379BF2-8E31-46CD-8A2D-E0B854B454EF::net6.0::Without.Systems.SimpleStorage.Test.Tests.ListBuckets&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::D8379BF2-8E31-46CD-8A2D-E0B854B454EF::net6.0::Without.Systems.SimpleStorage.Test.Tests.CreateAndDeleteBucket&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::D8379BF2-8E31-46CD-8A2D-E0B854B454EF::net6.0::Without.Systems.SimpleStorage.Test.Tests.ListObjects&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::D8379BF2-8E31-46CD-8A2D-E0B854B454EF::net6.0::Without.Systems.SimpleStorage.Test.Tests.PutObjectBinaryToBucket&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::D8379BF2-8E31-46CD-8A2D-E0B854B454EF::net6.0::Without.Systems.SimpleStorage.Test.Tests.PutAndDeleteObjectBinaryToBucket&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;NUnit3x::D8379BF2-8E31-46CD-8A2D-E0B854B454EF::net6.0::Without.Systems.SimpleStorage.Test.Tests.GeneratePresignedUrl&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::D8379BF2-8E31-46CD-8A2D-E0B854B454EF::net8.0::Without.Systems.SimpleStorage.Test.Tests.GeneratePresignedUrl&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::D8379BF2-8E31-46CD-8A2D-E0B854B454EF::net8.0::Without.Systems.SimpleStorage.Test.Tests.ListObjects&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::D8379BF2-8E31-46CD-8A2D-E0B854B454EF::net8.0::Without.Systems.SimpleStorage.Test.Tests.PutAndDeleteObjectBinaryToBucket&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::D8379BF2-8E31-46CD-8A2D-E0B854B454EF::net8.0::Without.Systems.SimpleStorage.Test.Tests.Secure_Gateay&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::D8379BF2-8E31-46CD-8A2D-E0B854B454EF::net8.0::Without.Systems.SimpleStorage.Test.Tests.Uri_Test&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

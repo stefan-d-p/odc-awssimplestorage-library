@@ -1,6 +1,8 @@
 ﻿using System.Net;
 using Amazon;
 using Amazon.Runtime;
+using Amazon.Runtime.Internal;
+using Amazon.Runtime.Internal.Auth;
 using Amazon.S3;
 using AutoMapper;
 using Without.Systems.SimpleStorage.Extensions;
@@ -73,9 +75,21 @@ public class SimpleStorage : ISimpleStorage
                     Enum.TryParse(src.Verb, out HttpVerb httpVerb);
                     return httpVerb;
                 }));
-            
+
+            cfg.CreateMap<Structures.AmazonS3Config, Amazon.S3.AmazonS3Config>()
+                .ForMember(dest => dest.RegionEndpoint,
+                    opt => opt.Condition(src => !string.IsNullOrEmpty(src.RegionEndpoint)))
+                .ForMember(dest => dest.RegionEndpoint,
+                    opt => opt.MapFrom(src => RegionEndpoint.GetBySystemName(src.RegionEndpoint)))
+                .ForMember(dest => dest.ForcePathStyle, opt => opt.Condition(src => src.ForcePathStyle))
+                .ForMember(dest => dest.ProxyHost, opt => opt.Condition(src => !string.IsNullOrEmpty(src.ProxyHost)))
+                .ForMember(dest => dest.ProxyPort, opt => opt.Condition(src => !string.IsNullOrEmpty(src.ProxyHost)))
+                .ForMember(dest => dest.ServiceURL, opt => opt.Condition(src => !string.IsNullOrEmpty(src.ServiceURL)));
+                
+                    
+
             /*
-             * Response Mappings
+             * Response AutoMapper Mappings
              */
 
             cfg.CreateMap<Amazon.S3.Model.GetObjectResponse, Structures.GetObjectResponse>()
@@ -131,19 +145,23 @@ public class SimpleStorage : ISimpleStorage
 
         _mapper = mapperConfiguration.CreateMapper();
 
+        AWS4Signer signer = new AWS4Signer();
+        
+        
+
     }
 
     /// <summary>
     /// Retrieves an object from Amazon S3
     /// </summary>
     /// <param name="credentials">AWS Credentials</param>
-    /// <param name="region">AWS region system name</param>
+    /// <param name="config">S3 Client Configuration</param>
     /// <param name="getObjectRequest">GetObject Request parameters</param>
     /// <returns>GetObject Response Structure</returns>
-    public Structures.GetObjectResponse GetObject(Structures.Credentials credentials, string region,
+    public Structures.GetObjectResponse GetObject(Structures.Credentials credentials, Structures.AmazonS3Config config,
         Structures.GetObjectRequest getObjectRequest)
     {
-        AmazonS3Client client = GetAwsSimpleStorageClient(credentials, region);
+        AmazonS3Client client = GetAwsSimpleStorageClient(credentials, config);
         var request = _mapper.Map<Amazon.S3.Model.GetObjectRequest>(getObjectRequest);
         Amazon.S3.Model.GetObjectResponse response = AsyncUtil.RunSync(() => client.GetObjectAsync(request));
         ParseResponse(response);
@@ -154,11 +172,11 @@ public class SimpleStorage : ISimpleStorage
     /// Deletes an Amazon S3 bucket
     /// </summary>
     /// <param name="credentials">AWS Credentials</param>
-    /// <param name="region">AWS region system name</param>
+    /// <param name="config">S3 Client Configuration</param>
     /// <param name="deleteBucketRequest">DeleteBucket Request parameters</param>
-    public void DeleteBucket(Structures.Credentials credentials, string region, Structures.DeleteBucketRequest deleteBucketRequest)
+    public void DeleteBucket(Structures.Credentials credentials, Structures.AmazonS3Config config, Structures.DeleteBucketRequest deleteBucketRequest)
     {
-        AmazonS3Client client = GetAwsSimpleStorageClient(credentials, region);
+        AmazonS3Client client = GetAwsSimpleStorageClient(credentials, config);
         var request = _mapper.Map<Amazon.S3.Model.DeleteBucketRequest>(deleteBucketRequest);
         Amazon.S3.Model.DeleteBucketResponse response = AsyncUtil.RunSync(() => client.DeleteBucketAsync(request));
         ParseResponse(response);
@@ -168,11 +186,11 @@ public class SimpleStorage : ISimpleStorage
     /// Lists Amazon S3 buckets
     /// </summary>
     /// <param name="credentials">AWS Credentials</param>
-    /// <param name="region">AWS region system name</param>
+    /// <param name="config">S3 Client Configuration</param>
     /// <returns>ListBuckets Response Structure</returns>
-    public Structures.ListBucketsResponse ListBuckets(Structures.Credentials credentials, string region)
+    public Structures.ListBucketsResponse ListBuckets(Structures.Credentials credentials, Structures.AmazonS3Config config)
     {
-        AmazonS3Client client = GetAwsSimpleStorageClient(credentials, region);
+        AmazonS3Client client = GetAwsSimpleStorageClient(credentials, config);
         Amazon.S3.Model.ListBucketsResponse response = AsyncUtil.RunSync(() => client.ListBucketsAsync());
         ParseResponse(response);
         return _mapper.Map<Structures.ListBucketsResponse>(response);
@@ -182,12 +200,12 @@ public class SimpleStorage : ISimpleStorage
     /// Creates an Amazon S3 bucket
     /// </summary>
     /// <param name="credentials">AWS Credentials</param>
-    /// <param name="region">AWS region system name</param>
+    /// <param name="config">S3 client configuration</param>
     /// <param name="putBucketRequest">PutBucket Request parameters</param>
-    public void PutBucket(Structures.Credentials credentials, string region,
+    public void PutBucket(Structures.Credentials credentials, Structures.AmazonS3Config config,
         Structures.PutBucketRequest putBucketRequest)
     {
-        AmazonS3Client client = GetAwsSimpleStorageClient(credentials, region);
+        AmazonS3Client client = GetAwsSimpleStorageClient(credentials, config);
         var request = _mapper.Map<Amazon.S3.Model.PutBucketRequest>(putBucketRequest);
         Amazon.S3.Model.PutBucketResponse response = AsyncUtil.RunSync(() => client.PutBucketAsync(request));
         ParseResponse(response);
@@ -197,13 +215,13 @@ public class SimpleStorage : ISimpleStorage
     /// Lists objects in an Amazon S3 bucket
     /// </summary>
     /// <param name="credentials">AWS Credentials</param>
-    /// <param name="region">AWS region system name</param>
+    /// <param name="config">S3 Client configuration</param>
     /// <param name="listObjectsRequest">ListObjects Request parameters</param>
     /// <returns>ListObjects Response Structure</returns>
-    public Structures.ListObjectsResponse ListObjects(Structures.Credentials credentials, string region,
+    public Structures.ListObjectsResponse ListObjects(Structures.Credentials credentials, Structures.AmazonS3Config config,
         Structures.ListObjectsRequest listObjectsRequest)
     {
-        AmazonS3Client client = GetAwsSimpleStorageClient(credentials, region);
+        AmazonS3Client client = GetAwsSimpleStorageClient(credentials, config);
         var request = _mapper.Map<Amazon.S3.Model.ListObjectsV2Request>(listObjectsRequest);
         Amazon.S3.Model.ListObjectsV2Response response = AsyncUtil.RunSync(() => client.ListObjectsV2Async(request));
         ParseResponse(response);
@@ -214,12 +232,12 @@ public class SimpleStorage : ISimpleStorage
     /// Stores an object in Amazon S3
     /// </summary>
     /// <param name="credentials">AWS Credentials</param>
-    /// <param name="region">AWS region system name</param>
+    /// <param name="config">S3 client configuration</param>
     /// <param name="putObjectRequest">PutObject Request parameters</param>
     /// <returns>PutObject Response Structure</returns>
-    public Structures.PutObjectResponse PutObject(Structures.Credentials credentials, string region, Structures.PutObjectRequest putObjectRequest)
+    public Structures.PutObjectResponse PutObject(Structures.Credentials credentials, Structures.AmazonS3Config config, Structures.PutObjectRequest putObjectRequest)
     {
-        AmazonS3Client client = GetAwsSimpleStorageClient(credentials, region);
+        AmazonS3Client client = GetAwsSimpleStorageClient(credentials, config);
         var request = _mapper.Map<Amazon.S3.Model.PutObjectRequest>(putObjectRequest);
         Amazon.S3.Model.PutObjectResponse response = AsyncUtil.RunSync(() => client.PutObjectAsync(request));
         ParseResponse(response);
@@ -230,12 +248,12 @@ public class SimpleStorage : ISimpleStorage
     /// Deletes an object from Amazon S3
     /// </summary>
     /// <param name="credentials">AWS Credentials</param>
-    /// <param name="region">AWS region system name</param>
+    /// <param name="config">S3 Client configuration</param>
     /// <param name="deleteObjectRequest">DeleteObject Request parameters</param>
     /// <returns>DeleteObject Response Structure</returns>
-    public Structures.DeleteObjectResponse DeleteObject(Structures.Credentials credentials, string region, Structures.DeleteObjectRequest deleteObjectRequest)
+    public Structures.DeleteObjectResponse DeleteObject(Structures.Credentials credentials, Structures.AmazonS3Config config, Structures.DeleteObjectRequest deleteObjectRequest)
     {
-        AmazonS3Client client = GetAwsSimpleStorageClient(credentials, region);
+        AmazonS3Client client = GetAwsSimpleStorageClient(credentials, config);
         var request = _mapper.Map<Amazon.S3.Model.DeleteObjectRequest>(deleteObjectRequest);
         Amazon.S3.Model.DeleteObjectResponse response = AsyncUtil.RunSync(() => client.DeleteObjectAsync(request));
         ParseResponse(response);
@@ -246,23 +264,31 @@ public class SimpleStorage : ISimpleStorage
     /// Generates a pre-signed URL for an Amazon S3 object
     /// </summary>
     /// <param name="credentials">AWS Credentials</param>
-    /// <param name="region">AWS region system name</param>
+    /// <param name="config">S3 Client configuration</param>
     /// <param name="getPreSignedUrlRequest">GetPreSignedUrl Request parameters</param>
     /// <returns>PreSigned Url</returns>
-    public string GetPresignedUrl(Structures.Credentials credentials, string region, Structures.GetPreSignedUrlRequest getPreSignedUrlRequest)
+    public string GetPresignedUrl(Structures.Credentials credentials, Structures.AmazonS3Config config, Structures.GetPreSignedUrlRequest getPreSignedUrlRequest)
     {
-        AmazonS3Client client = GetAwsSimpleStorageClient(credentials, region);
+        AmazonS3Client client = GetAwsSimpleStorageClient(credentials, config);
         var request = _mapper.Map<Amazon.S3.Model.GetPreSignedUrlRequest>(getPreSignedUrlRequest);
         string url = AsyncUtil.RunSync(() => client.GetPreSignedURLAsync(request));
         return url;
     }
 
-    private AmazonS3Client GetAwsSimpleStorageClient(Structures.Credentials credentials, string region) =>
-        new AmazonS3Client(credentials.ToAwsCredentials(), RegionEndpoint.GetBySystemName(region));
+    private AmazonS3Client GetAwsSimpleStorageClient(Structures.Credentials credentials,
+        Structures.AmazonS3Config config)
+    {
+        Amazon.S3.AmazonS3Config amazonS3Config = _mapper.Map<Amazon.S3.AmazonS3Config>(config);
+        return new AmazonS3Client(credentials.ToAwsCredentials(), amazonS3Config);
+    }
+        
 
     private void ParseResponse(AmazonWebServiceResponse response)
     {
         if (!(response.HttpStatusCode.Equals(HttpStatusCode.OK) || response.HttpStatusCode.Equals(HttpStatusCode.NoContent)))
             throw new Exception($"Error in operation ({response.HttpStatusCode})");
+        
+        
+        
     }
 }
