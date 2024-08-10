@@ -10,7 +10,7 @@
 
     <ItemGroup>
         <PackageReference Include="AutoMapper" Version="13.0.1" />
-        <PackageReference Include="AWSSDK.S3" Version="3.7.308.5" />
+        <PackageReference Include="AWSSDK.S3" Version="3.7.400.4" />
         <PackageReference Include="OutSystems.ExternalLibraries.SDK" Version="1.4.0"/>
     </ItemGroup>
 
