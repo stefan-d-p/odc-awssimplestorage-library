@@ -14,7 +14,7 @@ public struct S3Object
         DataType = OSDataType.Text)]
     public string ETag;
 
-    [OSStructureField(Description = "he name of the bucket containing this object",
+    [OSStructureField(Description = "The name of the bucket containing this object",
         DataType = OSDataType.Text)]
     public string BucketName;
     

@@ -30,7 +30,7 @@ public struct PutObjectRequest
         DefaultValue = "STANDARD")]
     public string StorageClass;
 
-    [OSStructureField(Description = "he tag-set for the object",
+    [OSStructureField(Description = "The tag-set for the object",
         IsMandatory = false)]
     public List<Tag> TagSet;
     
