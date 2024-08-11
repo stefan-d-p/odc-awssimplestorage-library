@@ -39,6 +39,12 @@ public struct AmazonS3Config
         DataType = OSDataType.Integer,
         IsMandatory = false)]
     public int SecureGatewayPort;
+    
+    [OSStructureField(Description = "Secure Gateway Protocol. Either http or https. Defaults to http",
+        DataType = OSDataType.Text,
+        IsMandatory = false,
+        DefaultValue = "http")]
+    public string SecureGatewayProtocol;
 
     [OSStructureField(
         Description =
@@ -53,7 +59,7 @@ public struct AmazonS3Config
             /*
              * When used with Private Gateway return the environment variable for private gateway
              */
-            if (UseSecureGateway) return $"{Environment.GetEnvironmentVariable("SECURE_GATEWAY")}:{SecureGatewayPort}";
+            if (UseSecureGateway) return $"{SecureGatewayProtocol}://{Environment.GetEnvironmentVariable("SECURE_GATEWAY")}:{SecureGatewayPort}";
             
             return _serviceUrl;
         }
