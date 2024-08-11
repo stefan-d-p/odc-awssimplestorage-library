@@ -34,6 +34,11 @@ public struct AmazonS3Config
         IsMandatory = false,
         DefaultValue = "False")]
     public bool UseSecureGateway;
+    
+    [OSStructureField(Description = "OutSystems Secure Gateway port number to connect",
+        DataType = OSDataType.Integer,
+        IsMandatory = false)]
+    public int SecureGatewayPort;
 
     [OSStructureField(
         Description =
@@ -48,7 +53,7 @@ public struct AmazonS3Config
             /*
              * When used with Private Gateway return the environment variable for private gateway
              */
-            if (UseSecureGateway) return Environment.GetEnvironmentVariable("SECURE_GATEWAY");
+            if (UseSecureGateway) return $"{Environment.GetEnvironmentVariable("SECURE_GATEWAY")}:{SecureGatewayPort}";
             
             return _serviceUrl;
         }
