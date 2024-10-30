@@ -1,11 +1,12 @@
-﻿using System.Net;
+﻿using System.Collections.Specialized;
+using System.Net;
 using Amazon;
 using Amazon.Runtime;
-using Amazon.Runtime.Internal;
-using Amazon.Runtime.Internal.Auth;
 using Amazon.S3;
 using AutoMapper;
+
 using Without.Systems.SimpleStorage.Extensions;
+using Without.Systems.SimpleStorage.Structures;
 using Without.Systems.SimpleStorage.Util;
 
 namespace Without.Systems.SimpleStorage;
@@ -145,9 +146,7 @@ public class SimpleStorage : ISimpleStorage
 
         _mapper = mapperConfiguration.CreateMapper();
 
-        AWS4Signer signer = new AWS4Signer();
-        
-        
+
 
     }
 
@@ -267,12 +266,12 @@ public class SimpleStorage : ISimpleStorage
     /// <param name="config">S3 Client configuration</param>
     /// <param name="getPreSignedUrlRequest">GetPreSignedUrl Request parameters</param>
     /// <returns>PreSigned Url</returns>
-    public string GetPresignedUrl(Structures.Credentials credentials, Structures.AmazonS3Config config, Structures.GetPreSignedUrlRequest getPreSignedUrlRequest)
+    public Structures.GetPresignedUrlResponse GetPresignedUrl(Structures.Credentials credentials, Structures.AmazonS3Config config, Structures.GetPreSignedUrlRequest getPreSignedUrlRequest)
     {
         AmazonS3Client client = GetAwsSimpleStorageClient(credentials, config);
         var request = _mapper.Map<Amazon.S3.Model.GetPreSignedUrlRequest>(getPreSignedUrlRequest);
         string url = AsyncUtil.RunSync(() => client.GetPreSignedURLAsync(request));
-        return url;
+        return ParsePresignedUrl(url);
     }
 
     private AmazonS3Client GetAwsSimpleStorageClient(Structures.Credentials credentials,
@@ -287,8 +286,43 @@ public class SimpleStorage : ISimpleStorage
     {
         if (!(response.HttpStatusCode.Equals(HttpStatusCode.OK) || response.HttpStatusCode.Equals(HttpStatusCode.NoContent)))
             throw new Exception($"Error in operation ({response.HttpStatusCode})");
-        
-        
-        
+    }
+
+    private GetPresignedUrlResponse ParsePresignedUrl(string url)
+    {
+        Uri uri = new Uri(url);
+        NameValueCollection query = ParseQueryString(uri.Query);
+        return new GetPresignedUrlResponse()
+        {
+            Url = url,
+            Expires = query["X-Amz-Expires"] ?? string.Empty,
+            Algorithm = query["X-Amz-Algorithm"] ?? string.Empty,
+            Credential = query["X-Amz-Credential"] ?? string.Empty,
+            SignedHeaders = query["X-Amz-SignedHeaders"] ?? string.Empty,
+            Signature = query["X-Amz-Signature"] ?? string.Empty,
+            BaseUrl = $"{uri.Scheme}://{uri.Host}",
+            SecurityToken = query["X-Amz-Security-Token"] ?? string.Empty,
+            Key = uri.AbsolutePath
+
+        };
+
+    }
+
+    private NameValueCollection ParseQueryString(string query)
+    {
+        NameValueCollection result = new NameValueCollection();
+        string[] querySegments = query.Split('&');
+        foreach (string segment in querySegments)
+        {
+            string[] parts = segment.Split('=');
+            if (parts.Length > 0)
+            {
+                string key = Uri.UnescapeDataString(parts[0].Trim(new char[] { '?', ' ' }));
+                string val = Uri.UnescapeDataString(parts.Length > 1 ? parts[1].Trim() : "");
+                result.Add(key, val);
+            }
+        }
+
+        return result;
     }
 }

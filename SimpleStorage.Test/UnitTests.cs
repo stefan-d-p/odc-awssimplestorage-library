@@ -26,8 +26,6 @@ public class Tests
         _awsConfig = new AmazonS3Config()
         {
             RegionEndpoint = _awsRegion,
-            ForcePathStyle = true,
-            ServiceURL = "http://localhost:9000"
         };
     }
 

@@ -133,10 +133,10 @@ namespace Without.Systems.SimpleStorage
 
         [OSAction(Description = "Generates a pre-signed URL for an Amazon S3 object",
             ReturnName = "url",
-            ReturnDescription = "pre-signed url to existing or new object",
-            ReturnType = OSDataType.Text,
+            ReturnDescription = "Generated pre-signed url for existing or new object",
+            ReturnType = OSDataType.InferredFromDotNetType,
             IconResourceName = "Without.Systems.SimpleStorage.Resources.SimpleStorage.png")]
-        string GetPresignedUrl(
+        Structures.GetPresignedUrlResponse GetPresignedUrl(
             [OSParameter(
                 Description = "AWS Account Credentials",
                 DataType = OSDataType.InferredFromDotNetType)]
