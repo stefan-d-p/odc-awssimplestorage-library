@@ -96,7 +96,16 @@ public class SimpleStorage : ISimpleStorage
             cfg.CreateMap<Amazon.S3.Model.GetObjectResponse, Structures.GetObjectResponse>()
                 .ForMember(dest => dest.Metadata,
                     opt => opt.MapFrom(src => src.Metadata.Keys.Select(key => new Structures.ObjectMetadata
-                        { Name = key, Value = src.Metadata[key] }).ToList()));
+                        { Name = key, Value = src.Metadata[key] }).ToList()))
+                .ForMember(dest => dest.Content,
+                    opt => opt.MapFrom((src, dest) =>
+                    {
+                        using (MemoryStream memoryStream = new MemoryStream())
+                        {
+                            src.ResponseStream.CopyTo(memoryStream);
+                            return memoryStream.ToArray();
+                        }
+                    }));
 
             cfg.CreateMap<Amazon.S3.Model.ListBucketsResponse, Structures.ListBucketsResponse>();
             cfg.CreateMap<Amazon.S3.Model.ListObjectsV2Response, Structures.ListObjectsResponse>();
@@ -295,6 +304,7 @@ public class SimpleStorage : ISimpleStorage
         return new GetPresignedUrlResponse()
         {
             Url = url,
+            Date = query["X-Amz-Date"] ?? string.Empty,
             Expires = query["X-Amz-Expires"] ?? string.Empty,
             Algorithm = query["X-Amz-Algorithm"] ?? string.Empty,
             Credential = query["X-Amz-Credential"] ?? string.Empty,

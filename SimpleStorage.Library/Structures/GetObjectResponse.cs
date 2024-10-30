@@ -69,6 +69,10 @@ public struct GetObjectResponse
     [OSStructureField(Description = "The base64-encoded, 256-bit SHA-256 digest of the object",
         DataType = OSDataType.Text)]
     public string ChecksumSHA256;
+    
+    [OSStructureField(Description = "Binary Data Content. Mind the 6MB limit  of external logic functions payloads",
+        DataType = OSDataType.BinaryData)]
+    public byte[] Content;
 
 
 

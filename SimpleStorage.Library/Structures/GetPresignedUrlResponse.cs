@@ -29,6 +29,10 @@ public struct GetPresignedUrlResponse
         DataType = OSDataType.Text)]
     public string SignedHeaders;
 
+    [OSStructureField(Description = "The date used to create the signature in the Authorization header",
+        DataType = OSDataType.Text)]
+    public string Date;
+    
     [OSStructureField(Description = "Offset in seconds when the presigned Url expires",
         DataType = OSDataType.Text)]
     public string Expires;
