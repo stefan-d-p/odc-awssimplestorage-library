@@ -85,7 +85,8 @@ public class SimpleStorage : ISimpleStorage
                 .ForMember(dest => dest.ForcePathStyle, opt => opt.Condition(src => src.ForcePathStyle))
                 .ForMember(dest => dest.ProxyHost, opt => opt.Condition(src => !string.IsNullOrEmpty(src.ProxyHost)))
                 .ForMember(dest => dest.ProxyPort, opt => opt.Condition(src => !string.IsNullOrEmpty(src.ProxyHost)))
-                .ForMember(dest => dest.ServiceURL, opt => opt.Condition(src => !string.IsNullOrEmpty(src.ServiceURL)));
+                .ForMember(dest => dest.ServiceURL, opt => opt.Condition(src => !string.IsNullOrEmpty(src.ServiceURL)))
+                .ForMember(dest => dest.SignatureVersion, opt => opt.MapFrom(src => "4"));
                 
                     
 
