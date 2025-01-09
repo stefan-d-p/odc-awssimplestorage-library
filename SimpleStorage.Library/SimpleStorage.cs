@@ -85,10 +85,7 @@ public class SimpleStorage : ISimpleStorage
                 .ForMember(dest => dest.ForcePathStyle, opt => opt.Condition(src => src.ForcePathStyle))
                 .ForMember(dest => dest.ProxyHost, opt => opt.Condition(src => !string.IsNullOrEmpty(src.ProxyHost)))
                 .ForMember(dest => dest.ProxyPort, opt => opt.Condition(src => !string.IsNullOrEmpty(src.ProxyHost)))
-                .ForMember(dest => dest.ServiceURL, opt => opt.Condition(src => !string.IsNullOrEmpty(src.ServiceURL)))
-                .ForMember(dest => dest.SignatureVersion, opt => opt.MapFrom(src => "4"));
-                
-                    
+                .ForMember(dest => dest.ServiceURL, opt => opt.Condition(src => !string.IsNullOrEmpty(src.ServiceURL)));
 
             /*
              * Response AutoMapper Mappings
@@ -288,6 +285,7 @@ public class SimpleStorage : ISimpleStorage
         Structures.AmazonS3Config config)
     {
         Amazon.S3.AmazonS3Config amazonS3Config = _mapper.Map<Amazon.S3.AmazonS3Config>(config);
+        AWSConfigsS3.UseSignatureVersion4 = true;
         return new AmazonS3Client(credentials.ToAwsCredentials(), amazonS3Config);
     }
         
