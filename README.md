@@ -25,6 +25,20 @@ Retrieves an object from Amazon S3
 
 * `result` - GetObject result structure
 
+### GetObjectMetadata
+
+Retrieves an object's metadata from Amazon S3, without returning the object itself
+
+**Input parameters**
+
+* `credentials` - AWS IAM credentials. You can either use IAM user credentials (Access Key and Secret Access Key) or an IAM role (Access Key, Secret Access Key and Session Token)
+* `config` - S3 Configuration Details
+* `getObjectMetadataRequest` - GetObjectMetadata Request Parameters.
+
+**Result**
+
+* `result` - GetObjectMetadata result structure
+
 ### DeleteBucket
 
 Deletes an Amazon S3 bucket

@@ -27,6 +27,8 @@ public class Tests
         {
             RegionEndpoint = _awsRegion,
         };
+        
+        
     }
 
     [Test]

@@ -29,6 +29,25 @@ namespace Without.Systems.SimpleStorage
                 DataType = OSDataType.InferredFromDotNetType)]
             Structures.GetObjectRequest getObjectRequest);
 
+        [OSAction(Description = "Retrieves metadata from an object without returning the object itself",
+            ReturnName = "result",
+            ReturnDescription = "Retrieved S3 object metadata details",
+            ReturnType = OSDataType.InferredFromDotNetType,
+            IconResourceName = "Without.Systems.SimpleStorage.Resources.SimpleStorage.png")]
+        Structures.GetObjectMetadataResponse GetObjectMetadataResponse(
+            [OSParameter(
+                Description = "AWS Account Credentials",
+                DataType = OSDataType.InferredFromDotNetType)]
+            Structures.Credentials credentials,
+            [OSParameter(
+                Description = "S3 Client configuration",
+                DataType = OSDataType.InferredFromDotNetType)]
+            Structures.AmazonS3Config config,
+            [OSParameter(
+                Description = "GetObjectMetadata Request Parameters",
+                DataType = OSDataType.InferredFromDotNetType)]
+            Structures.GetObjectMetadataRequest getObjectMetadataRequest);
+
         [OSAction(Description = "Delete an Amazon S3 Bucket",
             IconResourceName = "Without.Systems.SimpleStorage.Resources.SimpleStorage.png")]
         void DeleteBucket(

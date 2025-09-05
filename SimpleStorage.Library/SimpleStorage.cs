@@ -27,9 +27,9 @@ public class SimpleStorage : ISimpleStorage
              */
 
             cfg.CreateMap<Structures.GetObjectRequest, Amazon.S3.Model.GetObjectRequest>()
-                .ForMember(dest => dest.ModifiedSinceDateUtc,
+                .ForMember(dest => dest.ModifiedSinceDate,
                     opt => opt.Condition(src => src.ModifiedSinceDateUtc != new DateTime(1900, 1, 1)))
-                .ForMember(dest => dest.UnmodifiedSinceDateUtc,
+                .ForMember(dest => dest.UnmodifiedSinceDate,
                     opt => opt.Condition(src => src.UnmodifiedSinceDateUtc != new DateTime(1900, 1, 1)))
                 .ForMember(dest => dest.ExpectedBucketOwner,
                     opt => opt.Condition(src => !string.IsNullOrEmpty(src.ExpectedBucketOwner)))
@@ -37,6 +37,17 @@ public class SimpleStorage : ISimpleStorage
                 .ForMember(dest => dest.EtagToMatch,
                     opt => opt.Condition(src => !string.IsNullOrEmpty(src.EtagToMatch)));
 
+            cfg.CreateMap<Structures.GetObjectMetadataRequest, Amazon.S3.Model.GetObjectMetadataRequest>()
+                .ForMember(dest => dest.ModifiedSinceDate,
+                    opt => opt.Condition(src => src.ModifiedSinceDateUtc != new DateTime(1900, 1, 1)))
+                .ForMember(dest => dest.UnmodifiedSinceDate,
+                    opt => opt.Condition(src => src.UnmodifiedSinceDateUtc != new DateTime(1900, 1, 1)))
+                .ForMember(dest => dest.ExpectedBucketOwner,
+                    opt => opt.Condition(src => !string.IsNullOrEmpty(src.ExpectedBucketOwner)))
+                .ForMember(dest => dest.VersionId, opt => opt.Condition(src => !string.IsNullOrEmpty(src.VersionId)))
+                .ForMember(dest => dest.EtagToMatch,
+                    opt => opt.Condition(src => !string.IsNullOrEmpty(src.EtagToMatch)));
+            
             cfg.CreateMap<Structures.DeleteBucketRequest, Amazon.S3.Model.DeleteBucketRequest>()
                 .ForMember(dest => dest.BucketRegion,
                     opt => opt.Condition(src => !string.IsNullOrEmpty(src.BucketRegion)))
@@ -105,6 +116,11 @@ public class SimpleStorage : ISimpleStorage
                         }
                     }));
 
+            cfg.CreateMap<Amazon.S3.Model.GetObjectMetadataResponse, Structures.GetObjectMetadataResponse>()
+                .ForMember(dest => dest.Metadata,
+                    opt => opt.MapFrom(src => src.Metadata.Keys.Select(key => new Structures.ObjectMetadata
+                        { Name = key, Value = src.Metadata[key] }).ToList()));
+            
             cfg.CreateMap<Amazon.S3.Model.ListBucketsResponse, Structures.ListBucketsResponse>();
             cfg.CreateMap<Amazon.S3.Model.ListObjectsV2Response, Structures.ListObjectsResponse>();
             cfg.CreateMap<Amazon.S3.Model.PutObjectResponse, Structures.PutObjectResponse>();
@@ -153,8 +169,6 @@ public class SimpleStorage : ISimpleStorage
 
         _mapper = mapperConfiguration.CreateMapper();
 
-
-
     }
 
     /// <summary>
@@ -172,6 +186,23 @@ public class SimpleStorage : ISimpleStorage
         Amazon.S3.Model.GetObjectResponse response = AsyncUtil.RunSync(() => client.GetObjectAsync(request));
         ParseResponse(response);
         return _mapper.Map<Structures.GetObjectResponse>(response);
+    }
+
+    /// <summary>
+    /// Retrieve object metadata from an Amazon S3 object without returning the object itself. HeadObject.
+    /// </summary>
+    /// <param name="credentials">AWS Credentials</param>
+    /// <param name="config">S3 Client Configuration</param>
+    /// <param name="getObjectMetadataRequest">GetObjectMetadata Request parameters</param>
+    /// <returns></returns>
+    public Structures.GetObjectMetadataResponse GetObjectMetadataResponse(Structures.Credentials credentials,
+        Structures.AmazonS3Config config, Structures.GetObjectMetadataRequest getObjectMetadataRequest)
+    {
+        AmazonS3Client client = GetAwsSimpleStorageClient(credentials, config);
+        var request = _mapper.Map<Amazon.S3.Model.GetObjectMetadataRequest>(getObjectMetadataRequest);
+        Amazon.S3.Model.GetObjectMetadataResponse response = AsyncUtil.RunSync(() => client.GetObjectMetadataAsync(request));
+        ParseResponse(response);
+        return _mapper.Map<Structures.GetObjectMetadataResponse>(response);
     }
 
     /// <summary>
@@ -248,6 +279,7 @@ public class SimpleStorage : ISimpleStorage
         Amazon.S3.Model.PutObjectResponse response = AsyncUtil.RunSync(() => client.PutObjectAsync(request));
         ParseResponse(response);
         return _mapper.Map<Structures.PutObjectResponse>(response);
+        
     }
     
     /// <summary>
@@ -280,12 +312,11 @@ public class SimpleStorage : ISimpleStorage
         string url = AsyncUtil.RunSync(() => client.GetPreSignedURLAsync(request));
         return ParsePresignedUrl(url);
     }
-
+    
     private AmazonS3Client GetAwsSimpleStorageClient(Structures.Credentials credentials,
         Structures.AmazonS3Config config)
     {
         Amazon.S3.AmazonS3Config amazonS3Config = _mapper.Map<Amazon.S3.AmazonS3Config>(config);
-        AWSConfigsS3.UseSignatureVersion4 = true;
         return new AmazonS3Client(credentials.ToAwsCredentials(), amazonS3Config);
     }
         
