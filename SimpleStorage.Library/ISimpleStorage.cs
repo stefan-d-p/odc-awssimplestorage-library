@@ -34,7 +34,7 @@ namespace Without.Systems.SimpleStorage
             ReturnDescription = "Retrieved S3 object metadata details",
             ReturnType = OSDataType.InferredFromDotNetType,
             IconResourceName = "Without.Systems.SimpleStorage.Resources.SimpleStorage.png")]
-        Structures.GetObjectMetadataResponse GetObjectMetadataResponse(
+        Structures.GetObjectMetadataResponse GetObjectMetadata(
             [OSParameter(
                 Description = "AWS Account Credentials",
                 DataType = OSDataType.InferredFromDotNetType)]

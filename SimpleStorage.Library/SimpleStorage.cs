@@ -195,7 +195,7 @@ public class SimpleStorage : ISimpleStorage
     /// <param name="config">S3 Client Configuration</param>
     /// <param name="getObjectMetadataRequest">GetObjectMetadata Request parameters</param>
     /// <returns></returns>
-    public Structures.GetObjectMetadataResponse GetObjectMetadataResponse(Structures.Credentials credentials,
+    public Structures.GetObjectMetadataResponse GetObjectMetadata(Structures.Credentials credentials,
         Structures.AmazonS3Config config, Structures.GetObjectMetadataRequest getObjectMetadataRequest)
     {
         AmazonS3Client client = GetAwsSimpleStorageClient(credentials, config);
